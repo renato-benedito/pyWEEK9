@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect , HttpResponse
 from django.contrib import messages
 from django.contrib.messages import constants
 from django.http import Http404
-from .models import Apostila, ViewApostila
+from .models import Apostila, ViewApostila, Tags
 
 
 
@@ -21,6 +21,17 @@ def adicionar_apostilas(request):
 
         apostila = Apostila(user=request.user, titulo=titulo, arquivo=arquivo)
         apostila.save()
+
+        tags = request.POST.get('tags')
+        list_tags = tags.split(',')
+
+        for tag in list_tags:
+            nova_tag = Tags( nome = tag)
+            nova_tag.save()
+            apostila.tags.add(nova_tag)
+        
+        apostila.save()
+
         messages.add_message(
             request, constants.SUCCESS, 'Apostila adicionada com sucesso.'
         )
